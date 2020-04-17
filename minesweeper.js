@@ -16,6 +16,8 @@ export default class Minesweeper {
     mines;
     /** @type {boolean} */
     initialised = false;
+    /** @type {HTMLDivElement} */
+    gameOverElem;
     
     /**
      * Creates a new minesweeper game
@@ -125,8 +127,18 @@ export default class Minesweeper {
         this.initialised = true;
     }
 
+    gameOver() {
+        this.gridElem.classList.add("gameover");
+        //this.gameOverElem = /** @type {HTMLDivElement} */(createElement(this.gridElem, "div", "gameover"));
+    }
+
     reset() {
         for (let c of this.cells) c.reset();
         this.initialised = false;
+        this.gridElem.classList.remove("gameover");
+        if (this.gameOverElem) {
+            this.gameOverElem.remove();
+            this.gameOverElem = null;
+        }
     }
 }

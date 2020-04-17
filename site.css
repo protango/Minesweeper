@@ -10,6 +10,7 @@
 .minesweeper .grid {
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .minesweeper .row {
@@ -118,7 +119,15 @@
     content: "8";
     color: #7b7b7b;
 }
+.minesweeper .grid.gameover {
+    background-color: white;
+}
+.minesweeper .grid.gameover .cell {
+    filter: brightness(50%);
+    animation: gameover 3s forwards;
+}
 
-.minesweeper {
-
+@keyframes gameover {
+    0%  {opacity: 0;}
+    100% {opacity: 1;}
 }

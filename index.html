@@ -7,6 +7,7 @@
         </div>
         <button id="cheat">Cheat</button>
         <button id="reset">Reset</button>
+        <button id="gameover">Game Over</button>
     </body>
     <script type="module">
         import Minesweeper from "./minesweeper.js";
@@ -21,6 +22,11 @@
 
         document.getElementById("reset").onclick = (e) => {
             game.reset();
+            e.preventDefault();
+        }
+
+        document.getElementById("gameover").onclick = (e) => {
+            game.gameOver();
             e.preventDefault();
         }
     </script>
