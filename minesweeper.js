@@ -15,7 +15,7 @@ export default class Minesweeper {
     /** @type {number} */
     mines;
     /** @type {boolean} */
-    hasMines = false;
+    initialised = false;
     
     /**
      * Creates a new minesweeper game
@@ -31,14 +31,14 @@ export default class Minesweeper {
         this.mines = mines;
         clearChildren(mainElem);
         mainElem.className = "minesweeper";
-        this.gridElem = createElement(mainElem, "div", "grid");
+        this.gridElem = /**@type {HTMLDivElement}*/(createElement(mainElem, "div", "grid"));
         this.gridElem.oncontextmenu = () => false;
 
         for (let y = 0; y < height; y++) {
             let row = createElement(this.gridElem, "div", "row");
             for (let x = 0; x < width; x++) {
-                let cell = createElement(row, "div");
-                this.cells.push(new Cell(cell, x, y, false, this));
+                let cell = /**@type {HTMLDivElement}*/(createElement(row, "div"));
+                this.cells.push(new Cell(cell, x, y, this));
             }
         }
 
@@ -48,7 +48,7 @@ export default class Minesweeper {
 
     /**
      * Resizes the grid to accomodate a specific cell width and height
-     * @param {number} cellSize width and height of a cell in px, specify null for autosizing
+     * @param {number} [cellSize] width and height of a cell in px, specify null for autosizing
      */
     resize(cellSize) {
         if (cellSize) {
@@ -108,7 +108,7 @@ export default class Minesweeper {
      * @param {number} x The column of the initial location to be mine-free
      * @param {number} y The row of the initial location to be mine-free
      */
-    positionMines(x, y) {
+    initialise(x, y) {
         for (let i = 0; i < this.mines; i++) {
             let cell;
             do {
@@ -123,11 +123,11 @@ export default class Minesweeper {
             cell.isMine = true;
         }
         //for (let c of this.cells) c.number = c.computeNumber();
-        this.hasMines = true;
+        this.initialised = true;
     }
 
     reset() {
         for (let c of this.cells) c.reset();
-        this.hasMines = false;
+        this.initialised = false;
     }
 }

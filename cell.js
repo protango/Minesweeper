@@ -1,28 +1,64 @@
 import Minesweeper from "./minesweeper.js";
 import { createElement, clearChildren } from "./domManipulation.js";
+
+/** @readonly @enum {number} */
+export const CellState = {
+    revealed: 0,
+    unrevealed: 1,
+    flagged: 2,
+    questionMark: 3
+}
+
 export class Cell {
-    /** @type {HTMLDivElement} */
+    /** Private properties and methods */
+    _ = {
+        /** @type {Cell[]} */
+        neighbours: null,
+        /** @type {HTMLSpanElement} */
+        innerSpan: null,
+        /** @type {CellState} */
+        state: CellState.unrevealed,
+        /** @type {number} */
+        number: null
+    }
+
+    /** @readonly @type {HTMLDivElement} */
     elem;
-    /** @type {number} */
+    /** @readonly @type {number} */
     x;
-    /** @type {number} */
+    /** @readonly @type {number} */
     y;
     /** @type {boolean} */
-    revealed = false;
-    /** @type {boolean} */
-    isMine;
+    isMine = false;
     /** @type {number} */
-    number;
+    get number() {
+        if (this._.number != null && this.game.initialised) return this._.number;
+        return this._.number = this.neighbours.reduce((a, x) => a + (x.isMine ? 1 : 0), 0);
+    }
     /** @type {Minesweeper} */
     game;
-    /** @type {HTMLSpanElement} */
-    innerSpan;
-    /** @type {boolean} */
-    flagged = false;
-    /** @type {boolean} */
-    questionMark = false;
-    /** @type {boolean} */
-    disallowMine = false;
+    /** @type {CellState} */
+    get state() { return this._.state; }
+    set state(value) {
+        let data = "";
+        switch (value) {
+            case CellState.unrevealed: data = ""; break;
+            case CellState.revealed: data = this.isMine ? "*" : this.number.toString(); break;
+            case CellState.flagged: data = "F"; break;
+            case CellState.questionMark: data = "?"; break;
+        }
+        this.elem.setAttribute("data-minesweeper-value", data);
+        this._.innerSpan.className = value === CellState.revealed ? "revealed" : "unrevealed";
+        this._.state = value;
+    }
+    /** @type {Cell[]} */
+    get neighbours() {
+        if (this._.neighbours) return this._.neighbours;
+        return this._.neighbours = this.game.getSquareAround(this.x, this.y);
+    }
+    get isRevealed() { return this.state === CellState.revealed }
+    get isFlag() { return this.state === CellState.flagged }
+    get isQuestionMark() { return this.state === CellState.questionMark }
 
 
     /**
@@ -31,77 +67,59 @@ export class Cell {
      * @param {number} y 
      * @param {Minesweeper} game
      */
-    constructor(elem, x, y, isMine, game) {
+    constructor(elem, x, y, game) {
+        // Initialise parameters
         this.elem = elem;
         this.game = game;
         this.x = x;
         this.y = y;
-        this.isMine = isMine;
+
+        // Set up DOM
         clearChildren(elem);
         elem.className = "cell";
-        this.innerSpan = createElement(elem, "span", "unrevealed");
+        this._.innerSpan = createElement(elem, "span", "unrevealed");
 
-        var primed = false;
-        var lastLeftClickTime = new Date(0);
-        this.elem.onmousedown = () => primed = true;
-        this.elem.onmouseleave = () => {
-            if (primed) {
-                primed = false;
-            }
-        }
+        // Register event handlers
         this.elem.onmouseup = (e) => {
-            if (primed) {
-                primed = false;
-                if (e.button === 0) { // left click
-                    if (!this.revealed) 
-                        this.reveal();
-                    else if (new Date() - lastLeftClickTime < 300) this.revealAround();
-                    lastLeftClickTime = new Date();
-                } else if (e.button === 1) { // middle click
-                    this.revealAround();
-                } else if (e.button === 2 && !this.revealed) { // right click
-                    if (this.flagged) {
-                        this.flagged = false;
-                        this.questionMark = true;
-                        this.elem.setAttribute("data-minesweeper-value", "?");
-                    } else if (this.questionMark) {
-                        this.questionMark = false;
-                        this.elem.removeAttribute("data-minesweeper-value");
-                    } else {
-                        this.flagged = true;
-                        this.elem.setAttribute("data-minesweeper-value", "F");
-                    }
-                }  
-            }
+            if (e.button === 0) { // left click
+                this.reveal();
+            } else if (e.button === 1) { // middle click
+                this.revealNeighbours();
+            } else if (e.button === 2 && !this.isRevealed) { // right click
+                switch (this._.state) {
+                    case CellState.flagged: this.state = CellState.questionMark; break;
+                    case CellState.questionMark: this.state = CellState.unrevealed; break;
+                    default: this.state = CellState.flagged;
+                }
+            } 
+        }
+        this.elem.ondblclick = (e) => {
+            if (e.button === 0) this.revealNeighbours(); // left click
         }
     }
 
     reveal() {
-        if (!this.revealed && !this.flagged && !this.questionMark) {
-            this.revealed = true;
-            if (!this.game.hasMines) {
-                this.game.positionMines(this.x, this.y);
+        if (this.state === CellState.unrevealed) {
+            if (!this.game.initialised) {
+                this.game.initialise(this.x, this.y);
             }
-            this.innerSpan.className = "revealed";
-            if (!this.isMine) {
-                this.number = this.computeNumber();
-                this.elem.setAttribute("data-minesweeper-value", this.number);
-                if (this.number === 0) {
-                    for (let c of this.game.getSquareAround(this.x, this.y))
-                        if (!c.revealed && !c.flagged && !c.questionMark) c.simulateClick();
-                }
-            } else {
-                this.elem.setAttribute("data-minesweeper-value", "*");
+            this.state = CellState.revealed;
+            if (!this.isMine && this.number === 0) {
+                for (let c of this.neighbours)
+                    if (c.state === CellState.unrevealed) c.simulateClick();
             }
         }
     }
 
-    revealAround() {
-        if (this.revealed) {
-            let aroundCs = this.game.getSquareAround(this.x, this.y);
-            if (aroundCs.reduce((a, x) => a + x.flagged, 0) === this.number)
+    /**
+     * Reveals all (non-flagged) neighbours if there enough flags surrounding this cell
+     */
+    revealNeighbours() {
+        if (this.isRevealed) {
+            let aroundCs = this.neighbours;
+            if (aroundCs.reduce((a, x) => a + (x.isFlag ? 1 : 0), 0) === this.number)
                 for (let c of aroundCs)
-                    if (!c.flagged) c.simulateClick(100);
+                    if (c.state === CellState.unrevealed) c.simulateClick(100);
         }
     }
 
@@ -109,35 +127,35 @@ export class Cell {
      * Simulates clicking this cell (plays click animation and triggers the reveal method if applicable)
      * @param {number} delay Delay between mouse down and mouse up
      */
-    simulateClick(delay) {
-        this.innerSpan.classList.add("active");
+    simulateClick(delay = 50) {
+        this._.innerSpan.classList.add("active");
         setTimeout(() => {
-            this.innerSpan.classList.remove("active");
+            this._.innerSpan.classList.remove("active");
             this.reveal();
-        }, delay || 50);
+        }, delay);
     }
 
     computeNumber() {
-        return this.game.getSquareAround(this.x, this.y).reduce((a, x) => a + x.isMine, 0);
+        return this.neighbours.reduce((a, x) => a + (x.isMine ? 1 : 0), 0);
     }
 
-    isClustered() {
-
-    }
-
+    /**
+     * Determines whether setting this cell to be a mine will cause a "cluster" of mines.
+     * A cluster is a group of mines where at least one mine does not have a non-mine neighbour.
+     */
     willCauseCluster() {
-        let squareAround = this.game.getSquareAround(this.x, this.y);
+        let squareAround = this.neighbours;
         let minesAround = squareAround.filter(x => x.isMine);
-        if (squareAround.length === minesAround.length) return true; // if all neighbours are mines then cluster will form
+        // at least one neighbour must not be a mine
+        if (squareAround.length === minesAround.length) return true;
         // all mine neighbours must have at least 2 free neighbours
-        if (minesAround.some(x => this.game.getSquareAround(x.x, x.y).filter(x => !x.isMine).length < 2)) return true;
+        if (minesAround.some(x => x.neighbours.filter(x => !x.isMine).length < 2)) return true;
         return false;
     }
 
     reset() {
-        this.number = undefined;
-        this.disallowMine = this.flagged = this.questionMark = this.isMine = this.revealed = false;
-        this.elem.removeAttribute("data-minesweeper-value");
-        this.innerSpan.className = "unrevealed";
+        this._.number = null;
+        this.isMine = false;
+        this.state = CellState.unrevealed;
     }
 }
