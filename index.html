@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="site.css" />
+    </head>
+    <body>
+        <div class="minesweeper">
+        </div>
+        <button id="cheat">Cheat</button>
+        <button id="reset">Reset</button>
+    </body>
+    <script type="module">
+        import Minesweeper from "./minesweeper.js";
+        let minesweeperDiv = document.querySelector(".minesweeper");
+        var game = new Minesweeper(minesweeperDiv, 10, 10, 50);
+        game.resize(25);
+
+        document.getElementById("cheat").onclick = (e) => {
+            game.cells.forEach(x => x.simulateClick());
+            e.preventDefault();
+        }
+
+        document.getElementById("reset").onclick = (e) => {
+            game.reset();
+            e.preventDefault();
+        }
+    </script>
+</html>

@@ -1,0 +1,23 @@
+<svg width="25" height="25" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="27" width="27" y="-1" x="-1"/>
+  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  </g>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <ellipse stroke="#000" ry="8.9375" rx="8.9375" id="svg_1" cy="12.5" cx="12.5" stroke-width="0" fill="#000000"/>
+  <path stroke="#000" id="svg_2" d="m10.269233,3.903843l2.230767,-3.903843l2.230767,3.903843l-4.461535,0z" fill-opacity="null" stroke-opacity="null" stroke-width="0" fill="#000000"/>
+  <path transform="rotate(180 12.5,23.048080444335938) " stroke="#000" id="svg_3" d="m10.26923,25.000001l2.23077,-3.90384l2.23077,3.90384l-4.46154,0z" fill-opacity="null" stroke-opacity="null" stroke-width="0" fill="#000000"/>
+  <path transform="rotate(90 22.769231796264652,12.500000953674318) " stroke="#000" id="svg_4" d="m20.538461,14.45192l2.23077,-3.90384l2.23077,3.90384l-4.46154,0z" fill-opacity="null" stroke-opacity="null" stroke-width="0" fill="#000000"/>
+  <path transform="rotate(-90 2.2307701110839866,12.500000000000002) " stroke="#000" id="svg_5" d="m0,14.45192l2.23077,-3.90384l2.23077,3.90384l-4.46154,0z" fill-opacity="null" stroke-opacity="null" stroke-width="0" fill="#000000"/>
+  <path transform="rotate(-135 4.869236946105957,19.786544799804688) " stroke="#000" id="svg_6" d="m2.638467,21.738464l2.23077,-3.90384l2.23077,3.90384l-4.46154,0z" fill-opacity="null" stroke-opacity="null" stroke-width="0" fill="#000000"/>
+  <path transform="rotate(135 19.976919174194336,19.940385818481445) " stroke="#000" id="svg_7" d="m17.74615,21.892306l2.23077,-3.90384l2.23077,3.90384l-4.46154,0z" fill-opacity="null" stroke-opacity="null" stroke-width="0" fill="#000000"/>
+  <path transform="rotate(45 19.915382385253906,4.955787658691406) " stroke="#000" id="svg_8" d="m17.684612,6.907707l2.23077,-3.90384l2.23077,3.90384l-4.46154,0z" fill-opacity="null" stroke-opacity="null" stroke-width="0" fill="#000000"/>
+  <path transform="rotate(-45 4.961545944213865,5.140405178070068) " stroke="#000" id="svg_9" d="m2.730776,7.092325l2.23077,-3.90384l2.23077,3.90384l-4.46154,0z" fill-opacity="null" stroke-opacity="null" stroke-width="0" fill="#000000"/>
+  <ellipse stroke="#000" ry="2.015383" rx="2.015383" id="svg_10" cy="8.713946" cx="9.607695" stroke-opacity="null" stroke-width="0" fill="#ffffff"/>
+ </g>
+</svg>
