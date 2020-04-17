@@ -134,11 +134,7 @@ export class Cell {
             this.reveal();
         }, delay);
     }
-
-    computeNumber() {
-        return this.neighbours.reduce((a, x) => a + (x.isMine ? 1 : 0), 0);
-    }
-
+    
     /**
      * Determines whether setting this cell to be a mine will cause a "cluster" of mines.
      * A cluster is a group of mines where at least one mine does not have a non-mine neighbour.

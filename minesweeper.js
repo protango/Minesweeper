@@ -122,7 +122,6 @@ export default class Minesweeper {
             );
             cell.isMine = true;
         }
-        //for (let c of this.cells) c.number = c.computeNumber();
         this.initialised = true;
     }
 
