@@ -111,19 +111,25 @@ export default class Minesweeper {
      * @param {number} y The row of the initial location to be mine-free
      */
     initialise(x, y) {
-        for (let i = 0; i < this.mines; i++) {
-            let cell;
-            do {
-                let mineX = Math.floor(Math.random() * this.width);
-                let mineY = Math.floor(Math.random() * this.height);
-                cell = this.getCell(mineX, mineY);
-            } while (
-                cell.isMine || // Ensure cell isn't already a mine
-                cell.willCauseCluster() || // Ensure that placing a mine here wont create a cluster
-                (cell.x >= x-1 && cell.x <= x+1 && cell.y >= y-1 && cell.y <= y+1) // Ensure that the mine is not near the start position
-            );
-            cell.isMine = true;
+        let startCell = this.getCell(x, y);
+        let mineCandidates = new Set(this.cells);
+
+        // Remove start area from mine candidates
+        mineCandidates.delete(startCell);
+        startCell.neighbours.forEach(x => mineCandidates.delete(x));
+
+        let mineCount = 0;
+        while (mineCount < this.mines && mineCandidates.size > 0) {
+            let candidateIdx = Math.floor(Math.random() * mineCandidates.size);
+            let candidate = [...mineCandidates][candidateIdx];
+            mineCandidates.delete(candidate);
+
+            if (!candidate.isMine && !candidate.willCauseCluster()) {
+                candidate.isMine = true;
+                mineCount++;
+            }
         }
+
         this.initialised = true;
     }
 
