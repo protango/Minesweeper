@@ -40,6 +40,7 @@ export default class Minesweeper {
         this.mines = mines;
         clearChildren(mainElem);
         mainElem.className = "minesweeper";
+        createElement(this.elem, "div", ["row", "header"]);
         this.gridElem = /**@type {HTMLDivElement}*/(createElement(mainElem, "div", "grid"));
         this.gridElem.oncontextmenu = () => false;
 

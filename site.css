@@ -10,7 +10,9 @@
     font-family: Inconsolata;
     src: url('./assets/Inconsolata-Bold.ttf');
 }
+.minesweeper {
 
+}
 .minesweeper .grid {
     display: flex;
     flex-direction: column;

@@ -102,6 +102,10 @@ export class Cell {
         }
     }
 
+    /**
+     * Reveal this cell
+     * @param {boolean} preventGameOver If true, will prevent a game over if this cell is a mine
+     */
     reveal(preventGameOver = false) {
         if (this.state === CellState.unrevealed) {
             if (!this.game.initialised) {
@@ -157,6 +161,9 @@ export class Cell {
         return false;
     }
 
+    /**
+     * Resets this cell to an uninitialised, unrevealed state
+     */
     reset() {
         this._.number = null;
         this.isMine = false;
