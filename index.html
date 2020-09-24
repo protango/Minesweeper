@@ -12,11 +12,11 @@
     <script type="module">
         import Minesweeper from "./minesweeper.js";
         let minesweeperDiv = document.querySelector(".minesweeper");
-        var game = new Minesweeper(minesweeperDiv, 10, 10, 100);
+        var game = new Minesweeper(minesweeperDiv, 10, 10, 25);
         game.resize(25);
 
         document.getElementById("cheat").onclick = (e) => {
-            game.cells.forEach(x => x.simulateClick());
+            game.cells.forEach(x => x.reveal(true));
             e.preventDefault();
         }
 

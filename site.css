@@ -6,11 +6,16 @@
     --cellHighlightColor: white;
 }
 
+@font-face {
+    font-family: Inconsolata;
+    src: url('./assets/Inconsolata-Bold.ttf');
+}
 
 .minesweeper .grid {
     display: flex;
     flex-direction: column;
     position: relative;
+    overflow: hidden;
 }
 
 .minesweeper .row {
@@ -46,8 +51,8 @@
     transition: border-width 0.05s linear;
 }
 
-.minesweeper .cell .unrevealed.active,
-.minesweeper .cell .unrevealed:hover:active {
+.minesweeper .grid:not(.gameover) .cell .unrevealed.active,
+.minesweeper .grid:not(.gameover) .cell .unrevealed:hover:active {
     background-color: var(--cellPressedColor);
     border-right: var(--cellRightColor) 0px solid;
     border-bottom: var(--cellBottomColor) 0px solid;
@@ -55,7 +60,7 @@
     border-left: var(--cellRightColor) 2px solid;
 }
 
-.minesweeper .cell .unrevealed:hover {
+.minesweeper .grid:not(.gameover) .cell .unrevealed:hover {
     background-color: var(--cellHighlightColor);
 }
 
@@ -65,6 +70,10 @@
     border-right: var(--cellRightColor) 1px solid;
 }
 
+.minesweeper .cell .revealed.triggered {
+    background-color: #f42222;
+}
+
 .minesweeper .cell[data-minesweeper-value="?"] span::after {
     content: "?";
     color: black;
@@ -72,11 +81,11 @@
 .minesweeper .cell[data-minesweeper-value="F"] span::after {
     content: "";
     background-image: url('./assets/flag.svg');
-    width: 60%;
-    height: 60%;
+    width: 100%;
+    height: 100%;
     background-position: center;
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: 60% 60%;
 }
 .minesweeper .cell[data-minesweeper-value="*"] .revealed::after {
     content: "";
@@ -86,6 +95,15 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
+}
+.minesweeper .cell[data-minesweeper-value="*X"] .revealed::after {
+    content: "";
+    background-image: url('./assets/cross.svg'), url('./assets/mine.svg');
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 85% 85%, 75% 75%;
 }
 .minesweeper .cell[data-minesweeper-value="1"] .revealed::after {
     content: "1";
@@ -127,8 +145,37 @@
     animation: gameover 3s forwards;
     animation-timing-function: ease-in-out;
 }
+.minesweeper .grid .gameOverOverlay {
+    position: absolute;
+    z-index: 2;
+    background-color: rgba(0,0,0,0.6);
+    width: 100%;
+    height: 60px;
+    top: -60px;
+    animation: gameOverSlideDown 0.8s forwards;
+    animation-delay: 1s;
+    animation-timing-function: ease-in-out;
+}
+.minesweeper .grid .gameOverOverlay span {
+    font-family: Inconsolata;
+    color: white;
+    display: block;
+    text-align: center;
+}
+.minesweeper .grid .gameOverOverlay .gameOverText {
+    margin-top: 5px;
+    font-size: 30px;
+}
+.minesweeper .grid .gameOverOverlay .score {
+    font-size: 15px;
+}
 
 @keyframes gameover {
     0%  {opacity: 0;}
     100% {opacity: 1;}
+}
+
+@keyframes gameOverSlideDown {
+    0%  {top: -60px;}
+    100% {top: calc(50% - 30px);}
 }

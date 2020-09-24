@@ -6,7 +6,8 @@ export const CellState = {
     revealed: 0,
     unrevealed: 1,
     flagged: 2,
-    questionMark: 3
+    questionMark: 3,
+    incorrectFlag: 4
 }
 
 export class Cell {
@@ -46,9 +47,10 @@ export class Cell {
             case CellState.revealed: data = this.isMine ? "*" : this.number.toString(); break;
             case CellState.flagged: data = "F"; break;
             case CellState.questionMark: data = "?"; break;
+            case CellState.incorrectFlag: data = "*X"; break;
         }
         this.elem.setAttribute("data-minesweeper-value", data);
-        this._.innerSpan.className = value === CellState.revealed ? "revealed" : "unrevealed";
+        this._.innerSpan.className = value === CellState.revealed || value === CellState.incorrectFlag ? "revealed" : "unrevealed";
         this._.state = value;
     }
     /** @type {Cell[]} */
@@ -81,6 +83,8 @@ export class Cell {
 
         // Register event handlers
         this.elem.onmouseup = (e) => {
+            if (this.game.isGameOver) return;
+
             if (e.button === 0) { // left click
                 this.reveal();
             } else if (e.button === 1) { // middle click
@@ -98,15 +102,19 @@ export class Cell {
         }
     }
 
-    reveal() {
+    reveal(preventGameOver = false) {
         if (this.state === CellState.unrevealed) {
             if (!this.game.initialised) {
                 this.game.initialise(this.x, this.y);
             }
             this.state = CellState.revealed;
+            this.game.score += this.isMine ? 0 : this.number;
             if (!this.isMine && this.number === 0) {
                 for (let c of this.neighbours)
                     if (c.state === CellState.unrevealed) c.simulateClick();
+            } else if (this.isMine && !preventGameOver) {
+                this._.innerSpan.classList.add("triggered");
+                this.game.gameOver();
             }
         }
     }

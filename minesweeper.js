@@ -1,5 +1,6 @@
 import {qs, qsa, createElement, clearChildren} from './domManipulation.js'
-import {Cell} from './cell.js'
+import {Cell, CellState} from './cell.js'
+import GameOver from './gameOver.js';
 
 export default class Minesweeper {
     /** @type {number} */
@@ -16,8 +17,14 @@ export default class Minesweeper {
     mines;
     /** @type {boolean} */
     initialised = false;
-    /** @type {HTMLDivElement} */
-    gameOverElem;
+    /** @type {boolean} */
+    get isGameOver() {
+        return this.gridElem.classList.contains("gameover");
+    };
+    /** @type {GameOver} */
+    gameOverObject;
+    /** @type {number} */
+    score = 0;
     
     /**
      * Creates a new minesweeper game
@@ -43,6 +50,8 @@ export default class Minesweeper {
                 this.cells.push(new Cell(cell, x, y, this));
             }
         }
+
+        this.gameOverObject = new GameOver(this);
 
         // set grid to autosizing mode
         this.resize();
@@ -135,16 +144,19 @@ export default class Minesweeper {
 
     gameOver() {
         this.gridElem.classList.add("gameover");
-        //this.gameOverElem = /** @type {HTMLDivElement} */(createElement(this.gridElem, "div", "gameover"));
+        this.gameOverObject.show(this.score);
+
+        for(let c of this.cells) {
+            if (c.isMine) c.reveal(true);
+            else if (c.isFlag && !c.isMine) c.state = CellState.incorrectFlag;
+        }
     }
 
     reset() {
         for (let c of this.cells) c.reset();
         this.initialised = false;
         this.gridElem.classList.remove("gameover");
-        if (this.gameOverElem) {
-            this.gameOverElem.remove();
-            this.gameOverElem = null;
-        }
+        this.gameOverObject.hide();
+        this.score = 0;
     }
 }
